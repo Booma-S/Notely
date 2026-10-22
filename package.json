@@ -1,0 +1,17 @@
+{
+  "name": "personal-notes-app-workspace",
+  "version": "1.0.0",
+  "description": "Personal Notes App - Mini-Project 1 (Cubrics)",
+  "scripts": {
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "test": "cd server && npm test",
+    "build:client": "cd client && npm run build"
+  },
+  "keywords": [
+    "notes-app",
+    "mern",
+    "cubrics"
+  ],
+  "license": "ISC"
+}
