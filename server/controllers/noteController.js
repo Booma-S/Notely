@@ -1,15 +1,22 @@
 const mongoose = require('mongoose');
 const Note = require('../models/Note');
 
-// @desc    Get all notes for authenticated user
+// @desc    Get all notes for authenticated user (supports active vs trashed)
 // @route   GET /api/notes
 // @access  Private
 const getNotes = async (req, res, next) => {
   try {
-    const { search, tag, pinned } = req.query;
+    const { search, tag, pinned, trashed } = req.query;
 
     // Base query scoped to the authenticated owner
     const query = { user: req.user._id };
+
+    // Separate active notes from trashed notes
+    if (trashed === 'true' || trashed === true) {
+      query.isTrashed = true;
+    } else {
+      query.isTrashed = { $ne: true };
+    }
 
     // Search filter across title and content (case-insensitive)
     if (search && search.trim()) {
@@ -45,7 +52,7 @@ const getNotes = async (req, res, next) => {
 // @access  Private
 const createNote = async (req, res, next) => {
   try {
-    const { title, content, tags, pinned } = req.body;
+    const { title, content, tags, pinned, color } = req.body;
 
     if (!title || !title.trim()) {
       res.status(400);
@@ -90,6 +97,8 @@ const createNote = async (req, res, next) => {
       content: content ? content.trim() : '',
       tags: parsedTags,
       pinned: typeof pinned === 'boolean' ? pinned : Boolean(pinned === 'true'),
+      color: color && typeof color === 'string' ? color.trim() : '#ffffff',
+      isTrashed: false,
     });
 
     res.status(201).json(note);
@@ -112,7 +121,7 @@ const updateNote = async (req, res, next) => {
 
     // Only whitelisted fields can be updated
     const updateData = {};
-    const { title, content, tags, pinned } = req.body;
+    const { title, content, tags, pinned, color, isTrashed } = req.body;
 
     if (title !== undefined) {
       if (!title || !title.trim()) {
@@ -159,6 +168,14 @@ const updateNote = async (req, res, next) => {
       updateData.pinned = typeof pinned === 'boolean' ? pinned : Boolean(pinned === 'true');
     }
 
+    if (color !== undefined) {
+      updateData.color = typeof color === 'string' ? color.trim() : '#ffffff';
+    }
+
+    if (isTrashed !== undefined) {
+      updateData.isTrashed = Boolean(isTrashed);
+    }
+
     // Owner-scoped update: only updates if the note belongs to req.user
     const updatedNote = await Note.findOneAndUpdate(
       { _id: id, user: req.user._id },
@@ -177,29 +194,58 @@ const updateNote = async (req, res, next) => {
   }
 };
 
-// @desc    Delete a note
+// @desc    Delete a note (Soft delete to trash, or permanent delete if already trashed or ?permanent=true)
 // @route   DELETE /api/notes/:id
 // @access  Private
 const deleteNote = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const { permanent } = req.query;
 
     if (!mongoose.isValidObjectId(id)) {
       res.status(400);
       throw new Error('Invalid note ID format');
     }
 
-    // Owner-scoped deletion: only deletes if the note belongs to req.user
-    const note = await Note.findOneAndDelete({ _id: id, user: req.user._id });
+    const note = await Note.findOne({ _id: id, user: req.user._id });
 
     if (!note) {
       res.status(404);
       throw new Error('Note not found');
     }
 
+    // Permanent delete if already trashed or explicitly requested
+    if (permanent === 'true' || note.isTrashed) {
+      await Note.findOneAndDelete({ _id: id, user: req.user._id });
+      return res.status(200).json({
+        message: 'Note deleted successfully',
+        id: id,
+        permanent: true,
+      });
+    }
+
+    // Soft delete (move to trash)
+    note.isTrashed = true;
+    await note.save();
+
     res.status(200).json({
       message: 'Note deleted successfully',
       id: id,
+      isTrashed: true,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Empty all notes in trash for authenticated user
+// @route   DELETE /api/notes/trash/empty
+// @access  Private
+const emptyTrash = async (req, res, next) => {
+  try {
+    await Note.deleteMany({ user: req.user._id, isTrashed: true });
+    res.status(200).json({
+      message: 'Trash emptied successfully',
     });
   } catch (error) {
     next(error);
@@ -211,4 +257,5 @@ module.exports = {
   createNote,
   updateNote,
   deleteNote,
+  emptyTrash,
 };

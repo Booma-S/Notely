@@ -1,10 +1,20 @@
 import React, { useState, useEffect } from 'react';
 
+const COLOR_PALETTE = [
+  { label: 'Default', value: '#ffffff', border: '#cbd5e1' },
+  { label: 'Peach', value: '#fee2e2', border: '#fca5a5' },
+  { label: 'Amber', value: '#fef3c7', border: '#fcd34d' },
+  { label: 'Mint', value: '#d1fae5', border: '#6ee7b7' },
+  { label: 'Sky', value: '#e0f2fe', border: '#7dd3fc' },
+  { label: 'Lavender', value: '#ede9fe', border: '#c4b5fd' },
+];
+
 const NoteForm = ({ noteToEdit, onSave, onCancel, isSaving }) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [tagsInput, setTagsInput] = useState('');
   const [pinned, setPinned] = useState(false);
+  const [color, setColor] = useState('#ffffff');
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
@@ -13,11 +23,13 @@ const NoteForm = ({ noteToEdit, onSave, onCancel, isSaving }) => {
       setContent(noteToEdit.content || '');
       setTagsInput(noteToEdit.tags ? noteToEdit.tags.join(', ') : '');
       setPinned(noteToEdit.pinned || false);
+      setColor(noteToEdit.color || '#ffffff');
     } else {
       setTitle('');
       setContent('');
       setTagsInput('');
       setPinned(false);
+      setColor('#ffffff');
     }
     setErrors({});
   }, [noteToEdit]);
@@ -63,12 +75,17 @@ const NoteForm = ({ noteToEdit, onSave, onCancel, isSaving }) => {
       content: content.trim(),
       tags: [...new Set(parsedTags)],
       pinned,
+      color,
     });
   };
 
   return (
     <div className="modal-overlay" onClick={onCancel}>
-      <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="modal-card"
+        style={{ backgroundColor: color !== '#ffffff' ? color : '#ffffff' }}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="modal-header">
           <h2>{noteToEdit ? 'Edit Note' : 'Create New Note'}</h2>
           <button
@@ -135,6 +152,26 @@ const NoteForm = ({ noteToEdit, onSave, onCancel, isSaving }) => {
             />
             {errors.tags && <span className="error-message">{errors.tags}</span>}
             <small className="form-hint">Separate multiple tags with commas</small>
+          </div>
+
+          {/* Color Palette Picker */}
+          <div className="form-group">
+            <label className="color-picker-label">Note Color</label>
+            <div className="color-palette-options">
+              {COLOR_PALETTE.map((c) => (
+                <button
+                  key={c.value}
+                  type="button"
+                  className={`color-swatch ${color === c.value ? 'selected' : ''}`}
+                  style={{ backgroundColor: c.value, borderColor: c.border }}
+                  onClick={() => setColor(c.value)}
+                  title={c.label}
+                  aria-label={`Select ${c.label} color`}
+                >
+                  {color === c.value && <span className="swatch-check">✓</span>}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="form-group-checkbox">

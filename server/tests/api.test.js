@@ -67,6 +67,12 @@ before(() => {
       if (query.user && n.user.toString() !== query.user.toString()) {
         return false;
       }
+      if (query.isTrashed !== undefined) {
+        if (query.isTrashed === true && !n.isTrashed) return false;
+        if (query.isTrashed === false && n.isTrashed) return false;
+      } else if (n.isTrashed) {
+        return false;
+      }
       if (query.pinned !== undefined && n.pinned !== query.pinned) {
         return false;
       }
@@ -90,7 +96,6 @@ before(() => {
 
     return {
       sort: (sortCriteria) => {
-        // pinned: -1, updatedAt: -1
         results.sort((a, b) => {
           if (a.pinned !== b.pinned) {
             return a.pinned ? -1 : 1;
@@ -103,6 +108,19 @@ before(() => {
     };
   };
 
+  Note.findOne = async (query) => {
+    const note = notesDB.find((n) => {
+      if (query._id && n._id.toString() !== query._id.toString()) return false;
+      if (query.user && n.user.toString() !== query.user.toString()) return false;
+      return true;
+    });
+    if (!note) return null;
+    note.save = async function () {
+      return this;
+    };
+    return note;
+  };
+
   Note.create = async (noteData) => {
     const newNote = {
       _id: new mongoose.Types.ObjectId(),
@@ -111,8 +129,13 @@ before(() => {
       content: noteData.content || '',
       tags: noteData.tags || [],
       pinned: !!noteData.pinned,
+      color: noteData.color || '#ffffff',
+      isTrashed: !!noteData.isTrashed,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      save: async function () {
+        return this;
+      },
     };
     notesDB.push(newNote);
     return newNote;
@@ -129,6 +152,8 @@ before(() => {
       if (update.$set.content !== undefined) note.content = update.$set.content;
       if (update.$set.tags !== undefined) note.tags = update.$set.tags;
       if (update.$set.pinned !== undefined) note.pinned = update.$set.pinned;
+      if (update.$set.color !== undefined) note.color = update.$set.color;
+      if (update.$set.isTrashed !== undefined) note.isTrashed = update.$set.isTrashed;
     }
     note.updatedAt = new Date().toISOString();
     return note;
@@ -142,6 +167,16 @@ before(() => {
     const [deleted] = notesDB.splice(index, 1);
     return deleted;
   };
+
+  Note.deleteMany = async (filter) => {
+    notesDB = notesDB.filter((n) => {
+      if (filter.user && n.user.toString() === filter.user.toString() && filter.isTrashed && n.isTrashed) {
+        return false;
+      }
+      return true;
+    });
+    return { acknowledged: true };
+  };
 });
 
 describe('Cubrics Notes App API Test Checklist (Section 7.1)', () => {
@@ -150,10 +185,6 @@ describe('Cubrics Notes App API Test Checklist (Section 7.1)', () => {
   let user1Id;
   let user2Id;
   let user1NoteId;
-
-  beforeEach(() => {
-    // Reset databases before each full test run
-  });
 
   // #1 Register with valid data -> 201 + token
   test('#1: Register with valid data returns 201 and token', async () => {
@@ -240,12 +271,14 @@ describe('Cubrics Notes App API Test Checklist (Section 7.1)', () => {
         content: 'Discuss API contract and deadlines.',
         tags: ['work', 'meeting'],
         pinned: true,
+        color: '#e0f2fe',
       });
 
     assert.strictEqual(res.status, 201);
     assert.ok(res.body._id);
     assert.strictEqual(res.body.title, 'Sprint planning');
     assert.strictEqual(res.body.pinned, true);
+    assert.strictEqual(res.body.color, '#e0f2fe');
     assert.deepStrictEqual(res.body.tags, ['work', 'meeting']);
     user1NoteId = res.body._id;
   });

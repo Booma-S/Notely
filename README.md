@@ -4,16 +4,13 @@ A secure, full-stack personal note-taking web application built as part of Mini-
 
 ---
 
-## 🔗 Live Links
-
-- **Frontend Application:** [https://personal-notes-app.vercel.app](https://personal-notes-app.vercel.app) *(Replace with your deployed frontend URL)*
-- **Backend API:** [https://personal-notes-api.onrender.com](https://personal-notes-api.onrender.com) *(Replace with your deployed backend URL)*
-
----
 
 ## 🚀 Features
 
 - **User Authentication & Isolation:** Secure signup and login powered by JSON Web Tokens (JWT) and salted bcrypt password hashing. Strict data isolation guarantees that users can only ever view, search, modify, or delete their own notes.
+- **Color-Coded Notes:** Choose from 6 modern pastel themes (Peach, Amber, Mint, Sky, Lavender, and White) to visually categorize notes.
+- **Trash & Soft Delete:** Deleted notes are safely placed in a dedicated Trash Can view with one-click **Restore** and **Delete Forever** options, plus an **Empty Trash** safeguard.
+- **1-Click Note Export:** Export any individual note to formatted Plain Text (`.txt`) or Markdown (`.md`) files with title, tags, date, and content preserved.
 - **Create Notes:** Quick note creation with title, body content, tags, and pin preference.
 - **Edit Notes:** In-place editing via responsive modal pre-populated with existing note data.
 - **Delete Notes:** Confirmation safeguard before deletion to prevent accidental loss.
@@ -41,35 +38,6 @@ A secure, full-stack personal note-taking web application built as part of Mini-
 - **bcryptjs** (Cryptographic password hashing)
 - **CORS & Dotenv** (Cross-origin configuration and environment variable management)
 
----
-
-## 📸 Screenshots & UI Preview
-
-```
-+-----------------------------------------------------------------------------------+
-|  📝 Personal Notes                   Search notes... [🔍]    Hello, Alice [Logout]|
-+-----------------------------------------------------------------------------------+
-|  [Filter by tag: All | #work | #meeting | #personal]      [📌 Pinned Only] [+ New]|
-+-----------------------------------------------------------------------------------+
-|                                                                                   |
-|  📌 Pinned Notes                                                                  |
-|  +------------------------------+  +------------------------------+               |
-|  | Sprint Planning        [📌]  |  | Server Architecture     [📌] |               |
-|  | Discuss API contract and     |  | Express + MongoDB setup with |               |
-|  | deadlines with the team.     |  | owner-scoped query security. |               |
-|  | #work #meeting               |  | #cubrics #backend            |               |
-|  | Updated: Oct 22  [✏️] [🗑️]   |  | Updated: Oct 22  [✏️] [🗑️]   |               |
-|  +------------------------------+  +------------------------------+               |
-|                                                                                   |
-|  Other Notes                                                                      |
-|  +------------------------------+                                                 |
-|  | Grocery List           [📍]  |                                                 |
-|  | Milk, eggs, coffee beans.    |                                                 |
-|  | #personal                    |                                                 |
-|  | Updated: Oct 22  [✏️] [🗑️]   |                                                 |
-|  +------------------------------+                                                 |
-+-----------------------------------------------------------------------------------+
-```
 
 ---
 

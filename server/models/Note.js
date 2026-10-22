@@ -44,6 +44,16 @@ const noteSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    color: {
+      type: String,
+      default: '#ffffff',
+      trim: true,
+    },
+    isTrashed: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
   },
   {
     timestamps: true,

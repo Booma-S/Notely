@@ -86,7 +86,7 @@ button:disabled {
 }
 
 .btn-icon:hover {
-  background-color: #f1f5f9;
+  background-color: rgba(0, 0, 0, 0.05);
   color: #1e293b;
 }
 
@@ -162,6 +162,165 @@ textarea.input-error {
 .char-exceeded {
   color: #ef4444;
   font-weight: 600;
+}
+
+/* ==========================================================================
+   Navigation Tabs (All Notes vs Trash)
+   ========================================================================== */
+.nav-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 0.5rem;
+}
+
+.nav-tab-btn {
+  background: transparent;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #64748b;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.nav-tab-btn:hover {
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
+
+.nav-tab-btn.active {
+  background-color: #eff6ff;
+  color: #2563eb;
+}
+
+/* ==========================================================================
+   Color Palette Swatches
+   ========================================================================== */
+.color-picker-label {
+  display: block;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #334155;
+  margin-bottom: 0.4rem;
+}
+
+.color-palette-options {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.color-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.color-swatch:hover {
+  transform: scale(1.15);
+}
+
+.color-swatch.selected {
+  box-shadow: 0 0 0 2px #3b82f6;
+  transform: scale(1.1);
+}
+
+.swatch-check {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #1e293b;
+}
+
+/* ==========================================================================
+   Export Dropdown Menu
+   ========================================================================== */
+.export-menu-container {
+  position: relative;
+  display: inline-block;
+}
+
+.export-dropdown {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 0.35rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  min-width: 140px;
+  z-index: 30;
+  overflow: hidden;
+}
+
+.export-dropdown button {
+  background: transparent;
+  border: none;
+  padding: 0.6rem 0.85rem;
+  text-align: left;
+  font-size: 0.82rem;
+  color: #334155;
+  border-radius: 0;
+}
+
+.export-dropdown button:hover {
+  background-color: #f8fafc;
+  color: #2563eb;
+}
+
+/* ==========================================================================
+   Trash View
+   ========================================================================== */
+.trash-view-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.trash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  border-bottom: 1px dashed #cbd5e1;
+}
+
+.trash-header h2 {
+  font-size: 1.3rem;
+  color: #0f172a;
+}
+
+.trash-subtitle {
+  font-size: 0.88rem;
+  color: #64748b;
+  margin-top: 0.2rem;
+}
+
+.trash-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.restore-btn {
+  color: #059669;
+  font-weight: 500;
+}
+
+.restore-btn:hover {
+  background-color: #ecfdf5;
+  color: #047857;
 }
 
 /* ==========================================================================
@@ -459,7 +618,6 @@ textarea.input-error {
 }
 
 .note-card {
-  background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 1.25rem;
@@ -478,8 +636,7 @@ textarea.input-error {
 
 .note-card.pinned-note {
   border-color: #93c5fd;
-  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
-  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.08);
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.12);
 }
 
 .note-card-header {
@@ -543,8 +700,9 @@ textarea.input-error {
 }
 
 .note-tag {
-  background-color: #f1f5f9;
-  color: #3b82f6;
+  background-color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  color: #2563eb;
   font-size: 0.75rem;
   font-weight: 500;
   padding: 0.2rem 0.55rem;
@@ -554,17 +712,17 @@ textarea.input-error {
 }
 
 .note-tag:hover {
-  background-color: #dbeafe;
+  background-color: rgba(255, 255, 255, 0.95);
 }
 
 .note-card-footer {
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
   padding-top: 0.75rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-size: 0.78rem;
-  color: #94a3b8;
+  color: #64748b;
 }
 
 .note-actions {
@@ -597,20 +755,21 @@ textarea.input-error {
 }
 
 .modal-card {
-  background: #ffffff;
   border-radius: 14px;
   width: 100%;
   max-width: 540px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
   overflow: hidden;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
+  transition: background-color 0.2s ease;
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .modal-header {
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
   display: flex;
   align-items: center;
   justify-content: space-between;
